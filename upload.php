@@ -38,7 +38,7 @@ if(($verifyimg['mime'] != 'image/png')
     exit;
 }
 $nonce=mt_rand();
-$uploaddir="../trapezimages/";
+$uploaddir="";
 $uploadfile = $uploaddir . $nonce.basename($_FILES['image']['name']);
 
 if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile)) {
