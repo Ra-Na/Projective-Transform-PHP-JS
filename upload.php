@@ -15,13 +15,9 @@
   
 
 
-
-
-
-
-
-
 <?php
+
+// PHP code to handle image upload
 
 if(($_FILES['image']['type'] != "image/png") 
 	&& ($_FILES['image']['type'] != "image/jpeg")
@@ -42,7 +38,7 @@ if(($verifyimg['mime'] != 'image/png')
     exit;
 }
 $nonce=mt_rand();
-$uploaddir="";
+$uploaddir="../trapezimages/";
 $uploadfile = $uploaddir . $nonce.basename($_FILES['image']['name']);
 
 if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile)) {
@@ -58,19 +54,14 @@ $imageData = base64_encode(file_get_contents($image));
 // Format the image SRC:  data:{mime};base64,{data};
 $src = 'data: '.mime_content_type($image).';base64,'.$imageData;
 
-// Echo out a sample image
-//echo '<img src="' . $src . '">';
-//echo "'.$src.'";
 ?>
 
 
 
 
-
-
-
-
 <script type="text/javascript">
+// JS function to copy pixel data to input field
+
 function copydata1()
 {
 	document.pointform.pxl1x.value=document.pointform.form_x.value;
@@ -122,17 +113,20 @@ function copydata6()
 
 
 <script language="JavaScript" type="text/javascript">
-    function point_it(event) {
+
+// JS function to extract the clicked pixel coords to an input field and draw a circle where clicked
+
+function point_it(event) {
         var pos_x = event.offsetX ? (event.offsetX) : event.pageX - document.getElementById("pointer_div").offsetLeft;
         var pos_y = event.offsetY ? (event.offsetY) : event.pageY - document.getElementById("pointer_div").offsetTop;
         document.pointform.form_x.value = pos_x;
 	document.pointform.form_y.value = pos_y;
 
-	if (typeof flag1 !== 'undefined') {	 
+/*	if (typeof flag1 !== 'undefined') {	 
 		var c=document.getElementById("pointer_div");
 		var ctx=c.getContext("2d");
 		ctx.clearRect(0,0,c.width,c.height);
-	};
+};*/
 
         drawcircle(pos_x,pos_y,20,2);
         drawcircle(pos_x,pos_y,3,1);
@@ -142,6 +136,8 @@ function copydata6()
 
 <script language="JavaScript" type="text/javascript">
 
+
+// JS func. to draw a line
 
 function drawline(x1, y1,x2,y2) {
 
@@ -167,9 +163,10 @@ function drawline(x1, y1,x2,y2) {
 	}
 	ctx.stroke();
 		 
-	return;   // The function returns the product of p1 and p2
+	return;   
 }
 
+// JS func. to draw a circle
 
 function drawcircle(x,y,r,w) {
 
@@ -190,6 +187,9 @@ function drawcircle(x,y,r,w) {
 }
 
 
+// Function to calculate the pixel-to-real-world-coord transform
+// Implementation of MvG's answer on stackexchange
+// https://math.stackexchange.com/questions/296794/finding-the-transform-matrix-from-4-projected-points-with-javascript
 
 
 function maketransform(){
@@ -210,6 +210,7 @@ function maketransform(){
 	var c4x=parseFloat(document.pointform.pnt4x.value);
 	var c4y=parseFloat(document.pointform.pnt4y.value);
 
+// simple flag that indicates that the transform has been calculated	
 	flag1=7.89;
 	 
 	C11=(c1x*(-(c3y*c4x) + c2y*(-c3x + c4x) + c2x*(c3y - c4y) + c3x*c4y)*(p2y - p3y)*(-(p2y*p4x) + p1y*(-p2x + p4x) + p1x*(p2y - p4y) + p2x*p4y)*(-(p3y*p4x) + p1y*(-p3x + p4x) + p1x*(p3y - p4y) + p3x*p4y) + c2x*(c1y*(c3x - c4x) + c3y*c4x - c3x*c4y + c1x*(-c3y + c4y))*(-p1y + p3y)*(-(p3y*p4x) + p2y*(-p3x + p4x) + p2x*(p3y - p4y) + p3x*p4y)*(p1y*(p2x - p4x) + p2y*p4x - p2x*p4y + p1x*(-p2y + p4y)) + c3x*(c1y*(c2x - c4x) + c2y*c4x - c2x*c4y + c1x*(-c2y + c4y))*(-p1y + p2y)*(p1y*(p3x - p4x) + p3y*p4x - p3x*p4y + p1x*(-p3y + p4y))*(p2y*(p3x - p4x) + p3y*p4x - p3x*p4y + p2x*(-p3y + p4y)))/((c1y*(c2x - c3x) + c2y*c3x - c2x*c3y + c1x*(-c2y + c3y))*(p1y*(p2x - p4x) + p2y*p4x - p2x*p4y + p1x*(-p2y + p4y))*(p1y*(p3x - p4x) + p3y*p4x - p3x*p4y + p1x*(-p3y + p4y))*(p2y*(p3x - p4x) + p3y*p4x - p3x*p4y + p2x*(-p3y + p4y)));
@@ -244,8 +245,12 @@ function maketransform(){
 
 }
 
+
 function calcdata5()
 {
+
+	// JS func to apply transform on input field 1
+	
 	var p5x=document.pointform.pxl5x.value;
 	var p5y=document.pointform.pxl5y.value;
 
@@ -261,6 +266,9 @@ function calcdata5()
 
 function calcdata6()
 {
+
+	// JS func to apply transform on input field 2 and calc real world distance btwn 2 points
+
 	var p6x=document.pointform.pxl6x.value;
 	var p6y=document.pointform.pxl6y.value;
 
@@ -280,6 +288,11 @@ function calcdata6()
 
 
 
+
+
+<!-- HTML part - forms and fields etc -->
+
+
 <form name="pointform" method="post">
 <canvas id="pointer_div" onclick="point_it(event)" width="<?php echo $width;?>" height="<?php echo $height;?>" style="background-image: url('<?php echo $src; ?>'); background-repeat: no-repeat; width: <?php echo $width;?>px; height: <?php echo $height;?>px;">
 
@@ -288,6 +301,7 @@ function calcdata6()
     <input type="text" name="form_x" size="4">
      y =
     <input type="text" name="form_y" size="4"><br>
+Fill out the first four lines, then calculate transform. Then calculate real world coordinates.<br>
 
 <table width='500' border='0' cellspacing='1' cellpadding='0'>
 <tr><td ></td><td>Pixel x</td><td>Pixel y</td><td>Coord. x</td><td>Coord. y</td></tr>
